@@ -2,7 +2,17 @@
 
 ## Quick Deploy (5 Minutes)
 
-### Step 1: Prepare Your Repository
+### Step 1: Pin Python Runtime (Required)
+
+Create a `runtime.txt` file in the repo root:
+
+```text
+python-3.11.9
+```
+
+This prevents dependency-install failures on newer default runtimes.
+
+### Step 2: Prepare Your Repository
 
 ```bash
 # Ensure all changes are committed
@@ -11,7 +21,7 @@ git commit -m "Ready for Streamlit Cloud deployment"
 git push origin main
 ```
 
-### Step 2: Deploy to Streamlit Cloud
+### Step 3: Deploy to Streamlit Cloud
 
 1. **Go to Streamlit Cloud**:
    - Visit [share.streamlit.io](https://share.streamlit.io)
@@ -40,6 +50,18 @@ git push origin main
 ---
 
 ## Troubleshooting
+
+### Issue: "Error installing requirements"
+
+This is usually a Python runtime compatibility issue (especially with pinned `playwright==1.41.0`).
+
+1. Verify `runtime.txt` exists in repo root with:
+   ```text
+   python-3.11.9
+   ```
+2. Commit and push the file.
+3. In Streamlit Cloud, click **Manage app** → **Reboot app** to force a clean rebuild.
+4. Re-open logs and confirm install succeeds before app startup.
 
 ### Issue: "Playwright browser not found"
 

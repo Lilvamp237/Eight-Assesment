@@ -1,13 +1,8 @@
 # Core Web Framework
 streamlit==1.31.0
 
-# Web Scraping - Playwright with specific version
-playwright==1.41.2
-
-# Fallback scraper
-requests==2.31.0
-
-# HTML Parsing
+# Web Scraping
+playwright==1.41.0
 beautifulsoup4==4.12.3
 
 # AI/LLM

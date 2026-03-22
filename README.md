@@ -73,7 +73,10 @@ docker run -p 8501:8501 -e GOOGLE_API_KEY=your_key website-auditor
    git push
    ```
 
-2. **Deploy to Streamlit Cloud**:
+2. **Pin Python Runtime**:
+   - Add `runtime.txt` in repo root with: `python-3.11.9`
+
+3. **Deploy to Streamlit Cloud**:
    - Go to [share.streamlit.io](https://share.streamlit.io)
    - Click "New app"
    - Connect your GitHub repository
