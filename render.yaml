@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: website-auditor
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+    healthCheckPath: /_stcore/health

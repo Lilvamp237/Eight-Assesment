@@ -10,7 +10,7 @@ import json
 
 
 class AuditAnalyst:
-    """Generates structured audit insights using LangChain and Gemini."""
+    """Generates structured audit insights using Google Gemini."""
 
     # System prompt that enforces grounded, metric-based analysis
     SYSTEM_PROMPT = """You are an expert website auditor analyzing a webpage based on factual metrics.

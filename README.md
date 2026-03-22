@@ -1,205 +1,258 @@
-# 🔍 AI-Powered Website Audit Tool
+# 🔍 AI Website Auditor
 
-A lightweight, production-ready tool that combines **factual web scraping** with **AI-powered analysis** to deliver comprehensive website audits. Built with Streamlit, Playwright, and Google Gemini.
+A production-ready tool that combines **web scraping** with **AI analysis** to deliver comprehensive website audits.
 
-## 🎯 Features
+Built with **Streamlit**, **Playwright**, and **Google Gemini**.
 
-- **Factual Metric Extraction**: Uses Playwright + BeautifulSoup to extract real data:
-  - Word count, heading distribution (H1-H3)
-  - CTA identification and counting
-  - Internal vs. external link analysis
-  - Image count and alt text accessibility audit
-  - SEO metadata (title, description)
+---
 
-- **AI-Powered Insights**: LangChain + Gemini generates:
-  - SEO analysis grounded in actual metrics
-  - Messaging and content depth evaluation
-  - CTA effectiveness assessment
-  - UX and accessibility concerns
-  - 3-5 prioritized, actionable recommendations
+## ✨ Features
 
-- **Full Transparency**: Prompt logging shows:
-  - System prompt
-  - User prompt with metrics
-  - Structured input (PageMetrics)
-  - Raw model output (AuditReport)
+- **🎯 Factual Metrics**: Word count, headings, CTAs, links, images, alt text, SEO metadata
+- **🤖 AI Insights**: SEO analysis, messaging, CTA effectiveness, UX concerns
+- **📊 Structured Output**: Pydantic-validated data with grounded recommendations
+- **🔍 Full Transparency**: Complete prompt logging and reasoning trace
+- **🐳 Docker Ready**: Production deployment configurations included
 
-## 📁 Project Structure
-
-```
-.
-├── models.py       # Pydantic models (PageMetrics, AuditReport)
-├── logger.py       # Prompt logging utility
-├── scraper.py      # WebsiteScraper (Playwright + BeautifulSoup)
-├── analyzer.py     # AuditAnalyst (LangChain + Gemini)
-├── app.py          # Streamlit UI
-├── requirements.txt
-└── .env.example
-```
+---
 
 ## 🚀 Quick Start
 
 ### 1. Install Dependencies
 
 ```bash
-# Create virtual environment (recommended)
+# Create virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# Install Python packages
+# Install packages
 pip install -r requirements.txt
-
-# Install Playwright browsers
 playwright install chromium
 ```
 
-### 2. Set Up API Key
+### 2. Configure API Key
 
-**Option A: Environment Variable (Recommended)**
 ```bash
-# Copy .env.example to .env
-cp .env.example .env
-
-# Edit .env and add your Google API key
-GOOGLE_API_KEY=your_actual_api_key_here
+# Create .env file
+echo "GOOGLE_API_KEY=your_actual_api_key_here" > .env
 ```
 
-**Option B: Streamlit Sidebar**
-- Enter your API key directly in the sidebar when running the app
+Get your Google API key from: https://makersuite.google.com/app/apikey
 
-**Getting a Google API Key:**
-1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Create a new API key
-3. Enable the Gemini API
-
-### 3. Run the Application
+### 3. Run the App
 
 ```bash
 streamlit run app.py
 ```
 
-The app will open in your browser at `http://localhost:8501`
+Access at http://localhost:8501
 
-## 📖 Usage
+---
 
-1. **Enter URL**: Type the website URL you want to audit
-2. **Configure API Key**: Add your Google API key (sidebar or .env)
-3. **Run Audit**: Click "🚀 Run Audit"
-4. **Review Results**:
-   - **Left Column**: Factual metrics extracted from the page
-   - **Right Column**: AI insights grounded in those metrics
-   - **Bottom Section**: Prioritized recommendations
-5. **Inspect Reasoning**: Expand "Prompt Logs / Reasoning Trace" to see:
-   - Complete system prompt
-   - User prompt with all metrics
-   - Raw AI output
+## 🐳 Docker Deployment
 
-## 🛠️ Technical Architecture
+### Local Testing
 
-### Separation of Concerns
+```bash
+# Using Docker Compose (recommended)
+docker-compose up -d
 
-```
-User Input (URL)
-    ↓
-WebsiteScraper (Playwright/BS4)
-    ↓
-PageMetrics (Pydantic)
-    ↓
-AuditAnalyst (LangChain + Gemini)
-    ↓
-AuditReport (Pydantic)
-    ↓
-Streamlit UI Display
+# Or using Docker directly
+docker build -t website-auditor .
+docker run -p 8501:8501 -e GOOGLE_API_KEY=your_key website-auditor
 ```
 
-### Key Design Decisions
+### Production Deployment
 
-1. **Playwright over requests**: Handles JavaScript-heavy sites
-2. **Pydantic validation**: Ensures structured, type-safe data
-3. **Low AI temperature (0.3)**: Reduces hallucination, increases consistency
-4. **Explicit grounding prompt**: Forces AI to cite specific metrics
-5. **Session-based logging**: Full transparency without file I/O
+See **[DEPLOY.md](DEPLOY.md)** for complete deployment guides to:
 
-## 🧪 Example Output
+- ⚡ **Streamlit Cloud** (FREE, easiest)
+- 🚂 **Railway** ($5/mo, auto-deploy)
+- 🎨 **Render** (FREE tier available)
+- ✈️ **Fly.io** ($5-10/mo, global edge)
+- ☁️ **Google Cloud Run** (auto-scale, pay-per-use)
+- 🌊 **DigitalOcean** ($5/mo, simple)
+- 📦 **AWS ECS** (enterprise)
 
-**Input URL**: `https://example.com`
+**Quick recommendation**:
+- **Demo**: Use Streamlit Cloud (free, 5-min setup)
+- **Production**: Use Railway or Render (Docker, easy)
 
-**Factual Metrics**:
-- 1,250 words, 1 H1, 5 H2s, 8 H3s
-- 3 CTAs, 15 internal links, 5 external links
-- 10 images, 20% missing alt text
+---
 
-**AI Insights**:
-- "With only 3 CTAs across 1,250 words (1 per 417 words), conversion opportunities are limited..."
-- "20% of images (2/10) lack alt text, creating accessibility barriers..."
+## 📁 Project Structure
 
-**Recommendations**:
+```
+.
+├── app.py              # Streamlit UI
+├── scraper.py          # Playwright + BeautifulSoup scraping
+├── analyzer.py         # Google Gemini AI analysis
+├── models.py           # Pydantic data models
+├── logger.py           # Prompt logging utility
+├── requirements.txt    # Python dependencies
+├── Dockerfile          # Docker image configuration
+├── docker-compose.yml  # Docker Compose setup
+├── railway.json        # Railway deployment config
+├── render.yaml         # Render deployment config
+├── fly.toml            # Fly.io deployment config
+└── DEPLOY.md           # Deployment guide
+```
+
+---
+
+## 🎯 How It Works
+
+```
+User enters URL
+    ↓
+Playwright scrapes page (handles JavaScript)
+    ↓
+BeautifulSoup extracts metrics (words, headings, CTAs, links, images)
+    ↓
+Pydantic validates data → PageMetrics
+    ↓
+Google Gemini analyzes metrics (grounded in factual data)
+    ↓
+Pydantic validates AI output → AuditReport
+    ↓
+Streamlit displays results + prompt logs
+```
+
+---
+
+## 📊 Example Output
+
+### Input
+```
+URL: https://example.com
+```
+
+### Factual Metrics (Left Column)
+- 1,250 words
+- 1 H1, 5 H2s, 8 H3s
+- 3 CTAs
+- 15 internal links, 5 external links
+- 10 images (20% missing alt text)
+
+### AI Insights (Right Column)
+> "With only 3 CTAs across 1,250 words (1 per 417 words), conversion opportunities are limited compared to the industry standard of 1 CTA per 200-250 words..."
+
+> "Critical: 20% of images (2/10) lack alt text, creating accessibility barriers and missing SEO opportunities..."
+
+### Recommendations
 1. Add alt text to 2 images immediately
-2. Increase CTAs from 3 to 6-8 (target 1 per 200-250 words)
+2. Increase CTAs from 3 to 6-8 (target 1 per 200 words)
 3. Shorten meta description by 10 characters
 
-## 🔧 Customization
+---
 
-### Adjusting CTA Detection
+## 🛠️ Tech Stack
 
-Edit `scraper.py` → `_count_ctas()` to modify CTA keyword patterns:
+| Component | Technology |
+|-----------|------------|
+| **Frontend** | Streamlit |
+| **Scraping** | Playwright + BeautifulSoup4 |
+| **AI** | Google Gemini 2.5 Flash |
+| **Validation** | Pydantic v2 |
+| **Deployment** | Docker |
+| **Language** | Python 3.11+ |
 
+---
+
+## ⚙️ Customization
+
+### Change AI Model
 ```python
-cta_keywords = [
-    'sign up', 'buy now', 'learn more',  # Add your keywords
-]
+# analyzer.py, line 40
+analyst = AuditAnalyst(model_name="gemini-2.5-flash")  # or gemini-2.5-pro
 ```
 
-### Changing AI Model
-
-Edit `analyzer.py` → `__init__()`:
-
+### Adjust Temperature
 ```python
-self.llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-pro",  # Use Pro for higher quality
-    temperature=0.1,          # Lower = more deterministic
-)
+# analyzer.py, line 62
+"temperature": 0.3,  # Lower = more consistent (0.0 - 2.0)
 ```
 
-### Custom System Prompt
+### Add CTA Keywords
+```python
+# scraper.py, line 75
+cta_keywords = ['sign up', 'buy now', 'your custom keyword']
+```
 
-Modify `SYSTEM_PROMPT` in `analyzer.py` to adjust AI behavior.
+---
 
-## 📊 Metrics Collected
+## 📈 Metrics Collected
 
 | Category | Metrics |
 |----------|---------|
 | **Content** | Word count, H1/H2/H3 counts |
 | **Conversion** | CTA count (buttons + action links) |
-| **Links** | Internal links, External links |
+| **Links** | Internal vs. external links |
 | **Media** | Image count, % missing alt text |
-| **SEO** | Meta title, Meta description |
-
-## 🤝 Contributing
-
-This is a 24-hour assignment project. For production use:
-- Add error handling for edge cases
-- Implement rate limiting
-- Add caching for repeated audits
-- Support batch URL processing
-- Add export to PDF/CSV
-
-## 📝 License
-
-MIT License - feel free to use for learning or commercial purposes.
-
-## 🙋 Support
-
-- **Google Gemini Issues**: Check [Google AI documentation](https://ai.google.dev/)
-- **Playwright Issues**: See [Playwright docs](https://playwright.dev/python/)
-- **Streamlit Issues**: Visit [Streamlit community](https://discuss.streamlit.io/)
-
-## ⚡ Performance Notes
-
-- **Average audit time**: 5-15 seconds (depends on page size and AI response time)
-- **Playwright timeout**: 30 seconds (configurable in `scraper.py`)
-- **Token usage**: ~500-1000 tokens per audit (Gemini Flash is very cost-effective)
+| **SEO** | Meta title, meta description |
 
 ---
 
-**Built with ❤️ for the Eight Sleep AI Engineering Assessment**
+## 🔒 Security
+
+- ✅ API keys stored in `.env` (never committed)
+- ✅ Environment variables for production
+- ✅ `.gitignore` configured properly
+- ✅ Docker secrets support
+- ✅ HTTPS enabled on all deployment platforms
+
+---
+
+## 💰 Cost Estimation
+
+**Google Gemini 2.5 Flash**:
+- ~500-1000 tokens per audit
+- **Cost per audit**: < $0.001
+- **100 audits**: ~$0.10
+- **Free tier**: 15 requests/minute
+
+**Hosting** (see DEPLOY.md for details):
+- FREE: Streamlit Cloud, Render (with limitations)
+- $5/mo: Railway, DigitalOcean, Fly.io
+- Pay-per-use: Google Cloud Run (~$5-20/mo)
+
+---
+
+## 🚀 Deployment Checklist
+
+- [ ] Google API key obtained
+- [ ] `.env` file created locally
+- [ ] Tested locally with `streamlit run app.py`
+- [ ] Tested with Docker: `docker-compose up`
+- [ ] Chose deployment platform (see DEPLOY.md)
+- [ ] Set `GOOGLE_API_KEY` environment variable on platform
+- [ ] Deployed and tested live URL
+- [ ] Verified health check endpoint works
+
+---
+
+## 📚 Documentation
+
+- **[DEPLOY.md](DEPLOY.md)** - Complete deployment guide for all platforms
+- **[README.md](README.md)** - This file (overview and quick start)
+
+---
+
+## 🤝 Support
+
+- **Google Gemini**: https://ai.google.dev
+- **Streamlit**: https://docs.streamlit.io
+- **Playwright**: https://playwright.dev/python
+- **Docker**: https://docs.docker.com
+
+---
+
+## 📝 License
+
+MIT License - Free for personal and commercial use
+
+---
+
+**Built with ❤️ for production deployment**
+
+**Quick Deploy**: See [DEPLOY.md](DEPLOY.md) for step-by-step guides
