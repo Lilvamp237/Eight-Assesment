@@ -119,8 +119,8 @@ def main():
 
         # Display prompt logs at the bottom
         st.markdown("---")
-        with st.expander("📜 Prompt Logs / Reasoning Trace", expanded=False):
-            PromptLogger.display_logs()
+        st.markdown("### 📜 Prompt Logs / Reasoning Trace")
+        PromptLogger.display_logs()
 
 
 def display_results(metrics: PageMetrics, report: AuditReport):

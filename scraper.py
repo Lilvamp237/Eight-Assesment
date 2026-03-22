@@ -100,12 +100,15 @@ class WebsiteScraper:
 
     def _count_words(self, soup: BeautifulSoup) -> int:
         """Count words in visible text content."""
+        # Work on a copy so later extractors (e.g., meta tags) still see the full DOM.
+        soup_for_text = BeautifulSoup(str(soup), 'html.parser')
+
         # Remove script, style, and other non-visible elements
-        for element in soup(['script', 'style', 'meta', 'link', 'noscript']):
+        for element in soup_for_text(['script', 'style', 'meta', 'link', 'noscript']):
             element.decompose()
 
         # Get text and count words
-        text = soup.get_text(separator=' ', strip=True)
+        text = soup_for_text.get_text(separator=' ', strip=True)
         words = re.findall(r'\b\w+\b', text)
         return len(words)
 
@@ -207,14 +210,18 @@ class WebsiteScraper:
 
     def _extract_meta_description(self, soup: BeautifulSoup) -> Optional[str]:
         """Extract the meta description."""
-        # Try Open Graph description first
-        og_desc = soup.find('meta', property='og:description')
-        if og_desc and og_desc.get('content'):
-            return og_desc['content'].strip()
+        # Check common meta-description variants used across sites.
+        description_selectors = [
+            {'property': re.compile(r'^og:description$', re.IGNORECASE)},
+            {'name': re.compile(r'^description$', re.IGNORECASE)},
+            {'name': re.compile(r'^twitter:description$', re.IGNORECASE)},
+            {'itemprop': re.compile(r'^description$', re.IGNORECASE)},
+            {'property': re.compile(r'^description$', re.IGNORECASE)},
+        ]
 
-        # Fall back to standard meta description
-        meta_desc = soup.find('meta', attrs={'name': 'description'})
-        if meta_desc and meta_desc.get('content'):
-            return meta_desc['content'].strip()
+        for selector in description_selectors:
+            tag = soup.find('meta', attrs=selector)
+            if tag and tag.get('content') and tag['content'].strip():
+                return tag['content'].strip()
 
         return None
