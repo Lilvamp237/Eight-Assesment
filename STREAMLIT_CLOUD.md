@@ -43,20 +43,45 @@ git push origin main
 
 ### Issue: "Playwright browser not found"
 
-Streamlit Cloud will automatically install Chromium from `packages.txt`. If you see errors:
+**This issue has been fixed** in the latest version. The app now uses system Chromium installed via `packages.txt`.
 
-1. Check that `packages.txt` exists with:
+If you still see errors:
+
+1. **Verify `packages.txt` contains**:
    ```
    chromium
    chromium-driver
+   libglib2.0-0
+   libnss3
+   libnspr4
+   libdbus-1-3
+   libatk1.0-0
+   libatk-bridge2.0-0
+   libcups2
+   libdrm2
+   libxkbcommon0
+   libxcomposite1
+   libxdamage1
+   libxfixes3
+   libxrandr2
+   libgbm1
+   libpango-1.0-0
+   libcairo2
+   libasound2
    ```
 
-2. Verify `requirements.txt` has:
+2. **Verify `scraper.py` uses system Chromium**:
+   The code automatically detects and uses system Chromium on Streamlit Cloud.
+
+3. **Reboot the app**:
+   - Go to Streamlit Cloud dashboard
+   - Click "Reboot app"
+   - Wait 2-3 minutes for rebuild
+
+4. **Check Playwright version** in `requirements.txt`:
    ```
    playwright==1.41.0
    ```
-
-3. Rebuild the app from Streamlit Cloud dashboard
 
 ### Issue: "API key not found"
 

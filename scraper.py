@@ -62,7 +62,23 @@ class WebsiteScraper:
             url = f'https://{url}'
 
         async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
+            # Use system Chromium on Streamlit Cloud (installed via packages.txt)
+            import os
+            import shutil
+
+            # Try to find system chromium
+            chromium_path = shutil.which('chromium') or shutil.which('chromium-browser')
+
+            if chromium_path:
+                # Use system Chromium (Streamlit Cloud)
+                browser = await p.chromium.launch(
+                    headless=True,
+                    executable_path=chromium_path
+                )
+            else:
+                # Use Playwright's bundled Chromium (local development)
+                browser = await p.chromium.launch(headless=True)
+
             page = await browser.new_page()
 
             try:
