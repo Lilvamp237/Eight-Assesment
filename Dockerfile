@@ -1,49 +1,33 @@
 FROM python:3.11-slim
 
-# Install system dependencies for Playwright
+# 1. Install initial tools and curl for the health check
 RUN apt-get update && apt-get install -y \
     wget \
-    ca-certificates \
-    fonts-liberation \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libatspi2.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libdrm2 \
-    libgbm1 \
-    libgtk-3-0 \
-    libnspr4 \
-    libnss3 \
-    libwayland-client0 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxfixes3 \
-    libxkbcommon0 \
-    libxrandr2 \
-    xdg-utils \
+    gnupg \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy requirements and install Python dependencies
+# 2. Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright browsers
-RUN playwright install chromium
-RUN playwright install-deps chromium
+# 3. Install Playwright AND its dependencies
+# We run apt-get update here so install-deps has the metadata it needs
+RUN apt-get update && \
+    playwright install chromium && \
+    playwright install-deps chromium && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy application code
+# 4. Copy application code
 COPY . .
 
-# Expose Streamlit port
+# 5. Expose port and setup health check
 EXPOSE 8501
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8501/_stcore/health || exit 1
 
-# Run the application
+# 6. Run the application
 CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
