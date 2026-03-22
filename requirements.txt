@@ -1,0 +1,15 @@
+# Core Web Framework
+streamlit==1.31.0
+
+# Web Scraping
+playwright==1.41.0
+beautifulsoup4==4.12.3
+
+# AI/LLM
+google-generativeai==0.7.2
+
+# Data Validation
+pydantic==2.6.0
+
+# Utilities
+python-dotenv==1.0.1
