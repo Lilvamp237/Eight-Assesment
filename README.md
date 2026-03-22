@@ -62,7 +62,7 @@ docker build -t website-auditor .
 docker run -p 8501:8501 -e GOOGLE_API_KEY=your_key website-auditor
 ```
 
-### Streamlit Cloud Deployment (Recommended)
+### Railway Deployment (Recommended)
 
 **Deploy in 5 minutes for FREE**:
 
@@ -73,22 +73,22 @@ docker run -p 8501:8501 -e GOOGLE_API_KEY=your_key website-auditor
    git push
    ```
 
-2. **Pin Python Runtime**:
-   - Add `runtime.txt` in repo root with: `python-3.11.9`
-
-3. **Deploy to Streamlit Cloud**:
-   - Go to [share.streamlit.io](https://share.streamlit.io)
-   - Click "New app"
+2. **Deploy to Railway**:
+   - Go to [railway.app](https://railway.app)
+   - Click "Start a New Project"
    - Connect your GitHub repository
-   - Select `main` branch and `app.py` as the main file
-   - Click "Advanced settings" → "Secrets"
-   - Add: `GOOGLE_API_KEY = "your_actual_api_key_here"`
-   - Click "Deploy!"
+   - Railway will automatically detect the `Dockerfile` and `railway.json`
+   - Click "Deploy"
 
-3. **Done!** Your app will be live at `https://your-app-name.streamlit.app`
+3. **Set Environment Variable**:
+   - In Railway dashboard → "Variables" tab
+   - Add: `GOOGLE_API_KEY` = `your_actual_api_key_here`
+   - Railway will automatically redeploy
 
-**Alternative Docker Deployment**:
-For production deployments with Docker, see included configurations for Railway, Render, Fly.io, and Google Cloud Run in the repository.
+4. **Done!** Your app will be live at `https://your-app-name.up.railway.app`
+
+**Alternative Deployments**:
+For other deployment options, see included configurations for Streamlit Cloud, Render, Fly.io, and Google Cloud Run in the repository.
 
 ---
 
@@ -434,5 +434,3 @@ MIT License - Free for personal and commercial use
 ---
 
 **Built with ❤️ for production deployment**
-
-**Quick Deploy**: See [DEPLOY.md](DEPLOY.md) for step-by-step guides
