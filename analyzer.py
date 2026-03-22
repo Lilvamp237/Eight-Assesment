@@ -37,13 +37,13 @@ Focus areas:
 
 Remember: Each insight must cite at least one specific metric."""
 
-    def __init__(self, api_key: Optional[str] = None, model_name: str = "gemini-2.5-flash"):
+    def __init__(self, api_key: Optional[str] = None, model_name: str = "gemini-3-flash"):
         """
         Initialize the audit analyst.
 
         Args:
             api_key: Google API key (if not provided, uses GOOGLE_API_KEY env var)
-            model_name: Gemini model to use (default: gemini-2.5-flash)
+            model_name: Gemini model to use (default: gemini-3-flash)
         """
         self.api_key = api_key or os.getenv("GOOGLE_API_KEY")
         if not self.api_key:
