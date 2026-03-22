@@ -8,7 +8,6 @@ from typing import Optional
 import os
 import json
 
-
 class AuditAnalyst:
     """Generates structured audit insights using Google Gemini."""
 
