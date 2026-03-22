@@ -7,12 +7,21 @@ from analyzer import AuditAnalyst
 from logger import PromptLogger
 from models import PageMetrics, AuditReport
 import os
+import subprocess  # Added for Playwright installation
 from dotenv import load_dotenv
 import traceback
 
+# --- Playwright Bootstrapping for Streamlit Cloud ---
+def install_playwright_browsers():
+    """Ensure Playwright browsers are installed in the Streamlit environment."""
+    try:
+        # This command downloads the necessary Chromium executable
+        subprocess.run(["playwright", "install", "chromium"], check=True)
+    except Exception as e:
+        st.error(f"Error installing Playwright browsers: {e}")
+
 # Load environment variables from .env file
 load_dotenv()
-
 
 # Page configuration
 st.set_page_config(
@@ -215,4 +224,6 @@ def display_results(metrics: PageMetrics, report: AuditReport):
 
 
 if __name__ == "__main__":
+    # Crucial: Run Playwright install before starting the app
+    install_playwright_browsers()
     main()
