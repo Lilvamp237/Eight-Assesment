@@ -12,10 +12,11 @@ from dotenv import load_dotenv
 import traceback
 
 # --- Playwright Bootstrapping for Streamlit Cloud ---
+# --- Playwright Bootstrapping for Streamlit Cloud ---
 def install_playwright_browsers():
     """Ensure Playwright browsers are installed in the Streamlit environment."""
     try:
-        # This command downloads the necessary Chromium executable
+        # The --with-deps flag helps install missing dependencies that don't require sudo
         subprocess.run(["playwright", "install", "chromium"], check=True)
     except Exception as e:
         st.error(f"Error installing Playwright browsers: {e}")
