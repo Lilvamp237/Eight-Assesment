@@ -11,3 +11,9 @@ libxfixes3
 libxrandr2
 libgbm1
 libasound2
+libpango-1.0-0
+libpangocairo-1.0-0
+libcairo2
+libgdk-pixbuf-2.0-0
+libgtk-3-0
+libxshmfence1
