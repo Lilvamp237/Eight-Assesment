@@ -3,9 +3,7 @@
   "build": {
     "builder": "DOCKERFILE",
     "dockerfilePath": "Dockerfile"
-  },
-  "deploy": {
-    "startCommand": "streamlit run app.py --server.port=$PORT --server.address=0.0.0.0",
+  },   "deploy": {
     "healthcheckPath": "/_stcore/health",
     "healthcheckTimeout": 100,
     "restartPolicyType": "ON_FAILURE",

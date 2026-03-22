@@ -132,6 +132,50 @@ Streamlit displays results + prompt logs
 
 ---
 
+## 🏗️ Architecture
+
+The AI Website Auditor follows a modular, pipeline-based architecture that separates concerns for maintainability and reliability:
+
+### System Components
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Streamlit     │    │   Web Scraper   │    │  AI Analyzer    │
+│   Frontend      │───▶│   (scraper.py)  │───▶│  (analyzer.py)  │
+│   (app.py)      │    │                 │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │                       ▼                       ▼
+         │              ┌─────────────────┐    ┌─────────────────┐
+         │              │   PageMetrics   │    │   AuditReport   │
+         │              │   (models.py)   │    │   (models.py)   │
+         │              └─────────────────┘    └─────────────────┘
+         │                                              │
+         ▼                                              ▼
+┌─────────────────┐                          ┌─────────────────┐
+│  Prompt Logger  │                          │     Results     │
+│  (logger.py)    │◀─────────────────────────│   Display       │
+└─────────────────┘                          └─────────────────┘
+```
+
+### Data Flow Architecture
+
+1. **Input Layer**: Streamlit UI captures user URL input and orchestrates the audit pipeline
+2. **Scraping Layer**: Playwright handles JavaScript-heavy sites, BeautifulSoup extracts structured data
+3. **Validation Layer**: Pydantic models ensure type safety and data consistency
+4. **AI Layer**: Google Gemini processes structured metrics and generates insights
+5. **Output Layer**: Structured results are displayed with full prompt transparency
+
+### Key Architectural Decisions
+
+- **Separation of Concerns**: Each module has a single responsibility (scraping, analysis, validation, logging)
+- **Type Safety**: Pydantic models provide contracts between components and catch errors early
+- **Grounded AI**: Structured metrics prevent hallucinations by giving AI concrete data to reference
+- **Transparency**: Complete prompt logging enables debugging and trust verification
+- **Containerized Deployment**: Docker ensures consistent environments across development and production
+
+---
+
 ## 📊 Example Output
 
 ### Input
@@ -251,7 +295,7 @@ Core application files and deployment configurations are included in this reposi
 
 ---
 
-## 🔄 Trade-offs & Design Decisions
+## 🔄 Trade-offs
 
 ### 1. Playwright vs. Requests for Scraping
 

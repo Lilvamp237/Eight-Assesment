@@ -23,11 +23,8 @@ RUN apt-get update && \
 # 4. Copy application code
 COPY . .
 
-# 5. Expose port and setup health check
+# 5. Expose default port (Railway will override with dynamic PORT)
 EXPOSE 8501
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8501/_stcore/health || exit 1
-
-# 6. Run the application
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# 6. Run the application (Railway will inject $PORT at runtime)
+CMD streamlit run app.py --server.port=${PORT:-8501} --server.address=0.0.0.0
