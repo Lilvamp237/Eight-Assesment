@@ -167,7 +167,7 @@ URL: https://example.com
 | **AI** | Google Gemini 2.5 Flash |
 | **Validation** | Pydantic v2 |
 | **Deployment** | Docker |
-| **Language** | Python 3.11+ |
+| **Language** | Python 3.10+ |
 
 ---
 

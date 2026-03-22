@@ -7,10 +7,10 @@
 Create a `runtime.txt` file in the repo root:
 
 ```text
-python-3.11.9
+python-3.10.13
 ```
 
-This prevents dependency-install failures on newer default runtimes.
+This ensures Streamlit Cloud uses the same Python version as your local environment and prevents dependency conflicts.
 
 ### Step 2: Prepare Your Repository
 
@@ -51,17 +51,16 @@ git push origin main
 
 ## Troubleshooting
 
-### Issue: "Error installing requirements"
+### Issue: "Apt dependencies" or "Error installing requirements"
 
-This is usually a Python runtime compatibility issue (especially with pinned `playwright==1.41.0`).
+This happens when system packages in `packages.txt` conflict with Streamlit Cloud's Debian environment.
 
-1. Verify `runtime.txt` exists in repo root with:
-   ```text
-   python-3.11.9
-   ```
-2. Commit and push the file.
-3. In Streamlit Cloud, click **Manage app** → **Reboot app** to force a clean rebuild.
-4. Re-open logs and confirm install succeeds before app startup.
+**Solution**: We use Playwright's **bundled Chromium** instead of system packages. Your `packages.txt` is now empty (or comments only), and Playwright handles browser installation automatically. No action needed—just redeploy.
+
+**Details**:
+- `packages.txt` was removed because Playwright includes its own Chromium binary
+- This avoids conflicts between Debian package versions on Streamlit Cloud
+- `setup.sh` no longer runs `playwright install-deps` (system-level installation)
 
 ### Issue: "Playwright browser not found"
 
