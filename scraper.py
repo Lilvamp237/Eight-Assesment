@@ -1,7 +1,13 @@
 """
 Web scraper for extracting factual metrics from websites.
 """
-from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
+try:
+    from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
+    PLAYWRIGHT_AVAILABLE = True
+except ImportError:
+    PLAYWRIGHT_AVAILABLE = False
+    PlaywrightTimeoutError = Exception
+
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 import re
@@ -12,7 +18,7 @@ import sys
 
 
 class WebsiteScraper:
-    """Extracts factual metrics from a webpage using Playwright and BeautifulSoup."""
+    """Extracts factual metrics from a webpage using Playwright (or fallback to requests)."""
 
     def __init__(self, timeout: int = 30000):
         """
@@ -36,17 +42,59 @@ class WebsiteScraper:
         Raises:
             Exception: If scraping fails
         """
-        # Playwright launches a browser via subprocess; on Windows this requires
-        # a proactor-based event loop policy.
-        if sys.platform == 'win32':
-            asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+        # Try Playwright first (handles JavaScript), fallback to requests
+        if PLAYWRIGHT_AVAILABLE:
+            try:
+                # Playwright launches a browser via subprocess; on Windows this requires
+                # a proactor-based event loop policy.
+                if sys.platform == 'win32':
+                    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
-        # Run the async scraping in a new event loop
-        return asyncio.run(self._scrape_async(url))
+                # Run the async scraping in a new event loop
+                return asyncio.run(self._scrape_with_playwright(url))
+            except Exception as e:
+                # If Playwright fails, try requests fallback
+                print(f"⚠️ Playwright failed ({str(e)}), using fallback scraper for static content...")
+                return self._scrape_with_requests(url)
+        else:
+            # Playwright not available, use requests
+            return self._scrape_with_requests(url)
 
-    async def _scrape_async(self, url: str) -> PageMetrics:
+    def _scrape_with_requests(self, url: str) -> PageMetrics:
         """
-        Async version of scrape.
+        Fallback scraper using requests (for static content only).
+
+        Args:
+            url: The URL to scrape
+
+        Returns:
+            PageMetrics object containing all extracted data
+        """
+        import requests
+
+        # Ensure URL has a scheme
+        if not url.startswith(('http://', 'https://')):
+            url = f'https://{url}'
+
+        try:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+            response = requests.get(url, headers=headers, timeout=30)
+            response.raise_for_status()
+            html_content = response.text
+        except Exception as e:
+            raise Exception(f"Failed to fetch page: {str(e)}")
+
+        # Parse with BeautifulSoup
+        soup = BeautifulSoup(html_content, 'html.parser')
+
+        # Extract all metrics using BeautifulSoup methods
+        return self._extract_metrics(soup, url)
+
+    async def _scrape_with_playwright(self, url: str) -> PageMetrics:
+        """
+        Scrape using Playwright (handles JavaScript-rendered content).
 
         Args:
             url: The URL to scrape
@@ -62,34 +110,29 @@ class WebsiteScraper:
             url = f'https://{url}'
 
         async with async_playwright() as p:
-            # Use system Chromium on Streamlit Cloud (installed via packages.txt)
-            import os
+            # Try system Chromium first (Streamlit Cloud), fallback to bundled
             import shutil
-
-            # Try to find system chromium
             chromium_path = shutil.which('chromium') or shutil.which('chromium-browser')
 
             if chromium_path:
-                # Use system Chromium (Streamlit Cloud)
                 browser = await p.chromium.launch(
                     headless=True,
-                    executable_path=chromium_path
+                    executable_path=chromium_path,
+                    args=['--no-sandbox', '--disable-setuid-sandbox']
                 )
             else:
-                # Use Playwright's bundled Chromium (local development)
-                browser = await p.chromium.launch(headless=True)
+                browser = await p.chromium.launch(
+                    headless=True,
+                    args=['--no-sandbox', '--disable-setuid-sandbox']
+                )
 
             page = await browser.new_page()
 
             try:
-                # Navigate and wait for content to load
                 await page.goto(url, timeout=self.timeout, wait_until='networkidle')
-
-                # Get the rendered HTML
                 html_content = await page.content()
-
             except PlaywrightTimeoutError:
-                raise Exception(f"Page load timeout after {self.timeout}ms. The website may be slow or unresponsive.")
+                raise Exception(f"Page load timeout after {self.timeout}ms.")
             except Exception as e:
                 raise Exception(f"Failed to load page: {str(e)}")
             finally:
@@ -97,8 +140,19 @@ class WebsiteScraper:
 
         # Parse with BeautifulSoup
         soup = BeautifulSoup(html_content, 'html.parser')
+        return self._extract_metrics(soup, url)
 
-        # Extract all metrics
+    def _extract_metrics(self, soup: BeautifulSoup, url: str) -> PageMetrics:
+        """
+        Extract all metrics from BeautifulSoup object.
+
+        Args:
+            soup: Parsed HTML
+            url: Original URL
+
+        Returns:
+            PageMetrics object
+        """
         return PageMetrics(
             url=url,
             word_count=self._count_words(soup),
