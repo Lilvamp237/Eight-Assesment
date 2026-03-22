@@ -13,12 +13,30 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 3. Install Playwright AND its dependencies
-# We run apt-get update here so install-deps has the metadata it needs
-RUN apt-get update && \
-    playwright install chromium && \
-    playwright install-deps chromium && \
-    rm -rf /var/lib/apt/lists/*
+# 3. Install Playwright dependencies manually and then Playwright
+# Install core dependencies needed for Playwright on Debian Trixie
+RUN apt-get update && apt-get install -y \
+    libnss3 \
+    libatk-bridge2.0-0 \
+    libdrm2 \
+    libxkbcommon0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libgbm1 \
+    libxtst6 \
+    libasound2 \
+    libpangocairo-1.0-0 \
+    libatk1.0-0 \
+    libcairo-gobject2 \
+    libgtk-3-0 \
+    libgdk-pixbuf2.0-0 \
+    fonts-liberation \
+    fonts-unifont \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Playwright chromium browser
+RUN playwright install chromium
 
 # 4. Copy application code
 COPY . .
