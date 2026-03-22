@@ -115,12 +115,18 @@ class WebsiteScraper:
         )
 
     def _count_words(self, soup: BeautifulSoup) -> int:
-        """Count words in visible text content."""
-        # Work on a copy so later extractors (e.g., meta tags) still see the full DOM.
-        soup_for_text = BeautifulSoup(str(soup), 'html.parser')
+        """Count words in visible body text content only."""
+        # Find the body element first - only extract text from body content
+        body = soup.find('body')
+        if not body:
+            # Fallback: if no body tag found, use the whole document
+            body = soup
+
+        # Work on a copy so later extractors (e.g., meta tags) still see the full DOM
+        soup_for_text = BeautifulSoup(str(body), 'html.parser')
 
         # Remove script, style, and other non-visible elements
-        for element in soup_for_text(['script', 'style', 'meta', 'link', 'noscript']):
+        for element in soup_for_text(['script', 'style', 'meta', 'link', 'noscript', 'head']):
             element.decompose()
 
         # Get text and count words
