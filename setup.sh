@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# Install Playwright browsers (bundled version)
-# Note: Removed 'playwright install-deps' to avoid Debian package conflicts
-# on Streamlit Cloud. Playwright's bundled Chromium has all needed libs.
-
-echo "Installing Playwright browsers..."
+# Install Playwright browsers and dependencies
+playwright install-deps
 playwright install chromium
-echo "Playwright browsers installed successfully!"
+
+echo "Playwright setup completed successfully!"

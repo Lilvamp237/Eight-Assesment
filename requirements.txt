@@ -13,3 +13,7 @@ pydantic==2.6.0
 
 # Utilities
 python-dotenv==1.0.1
+
+# Add Playwright and dotenv if not already present
+playwright
+dotenv
