@@ -1,3 +1,0 @@
-# System packages removed - Playwright handles Chromium bundled.
-# This prevents Debian package conflicts on Streamlit Cloud.
-# If system libraries are needed in future, add individually and test.
